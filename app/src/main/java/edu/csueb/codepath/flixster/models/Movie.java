@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Parcel
@@ -19,6 +20,8 @@ public class Movie {
     String backdropPath;
     double voteAverage;
     int movieId;
+    double popularity;
+    String releaseDate;
 
     //empty constructor needed by the Parceler library
     public Movie() {}
@@ -30,6 +33,8 @@ public class Movie {
         backdropPath = jsonObject.getString("backdrop_path");
         voteAverage = jsonObject.getDouble("vote_average");
         movieId = jsonObject.getInt("id");
+        popularity = jsonObject.getDouble("popularity");
+        releaseDate = jsonObject.getString("release_date");
     }
 
     public static List<Movie> fromJsonArray(JSONArray movieJsonArray) throws JSONException {
@@ -63,5 +68,13 @@ public class Movie {
     public int getMovieId() {
         return movieId;
     }
+    public double getPopularity() {
+        return popularity;
+    }
+
+    public String getReleaseDate() {
+        return releaseDate;
+    }
+
 
 }

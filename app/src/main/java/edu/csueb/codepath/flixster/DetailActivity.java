@@ -30,6 +30,8 @@ public class DetailActivity extends YouTubeBaseActivity {
     TextView tvTitle;
     TextView tvOverview;
     RatingBar ratingBar;
+    TextView tvPopularity;
+    TextView tvReleaseDate;
 
     YouTubePlayerView youTubePlayerView;
 
@@ -42,12 +44,17 @@ public class DetailActivity extends YouTubeBaseActivity {
         tvOverview = findViewById(R.id.tvOverview);
         ratingBar = findViewById(R.id.ratingBar);
         youTubePlayerView = findViewById(R.id.player);
+        tvPopularity = findViewById(R.id.tvPopularity);
+        tvReleaseDate = findViewById(R.id.tvReleaseDate);
+
 
         //String title = getIntent().getStringExtra("title");
         Movie movie = Parcels.unwrap(getIntent().getParcelableExtra("movie"));
         tvTitle.setText(movie.getTitle());
         tvOverview.setText(movie.getOverview());
         ratingBar.setRating((float) movie.getVoteAverage());
+        tvPopularity.setText(String.format("Popularity: %s", movie.getPopularity()));
+        tvReleaseDate.setText(String.format("Releasing: %s", movie.getReleaseDate()));
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(String.format(VIDEOS_URL, movie.getMovieId()), new JsonHttpResponseHandler() {
@@ -59,7 +66,7 @@ public class DetailActivity extends YouTubeBaseActivity {
                     if(results.length() == 0){ return;}
                     String youtubeKey = results.getJSONObject(0).getString("key");
                     Log.d(TAG, youtubeKey);
-                    initializeYoutube(youtubeKey);
+                    initializeYoutube(movie, youtubeKey);
                 } catch (JSONException e) {
                     Log.e(TAG, "Hit json exception", e);
                     e.printStackTrace();
@@ -75,12 +82,17 @@ public class DetailActivity extends YouTubeBaseActivity {
 
     }
 
-    private void initializeYoutube(final String youtubeKey) {
+    private void initializeYoutube(Movie movie, final String youtubeKey) {
         youTubePlayerView.initialize(YOUTUBE_API_KEY, new YouTubePlayer.OnInitializedListener() {
             @Override
             public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
                 Log.d(TAG, "onInitializationSuccess");
-                youTubePlayer.cueVideo(youtubeKey);
+                Double max = 5.0;
+                if(movie.getVoteAverage() > max) {
+                    youTubePlayer.loadVideo(youtubeKey);
+                } else {
+                    youTubePlayer.cueVideo(youtubeKey);
+                }
             }
 
             @Override

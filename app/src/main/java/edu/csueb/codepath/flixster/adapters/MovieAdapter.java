@@ -3,6 +3,7 @@ package edu.csueb.codepath.flixster.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.media.Image;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import java.util.List;
 import edu.csueb.codepath.flixster.DetailActivity;
 import edu.csueb.codepath.flixster.R;
 import edu.csueb.codepath.flixster.models.Movie;
+import jp.wasabeef.glide.transformations.RoundedCornersTransformation;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
 
@@ -68,6 +70,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
         TextView tvOverview;
         ImageView ivPoster;
         RelativeLayout container;
+        ImageView ivPosterOverlay;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -75,6 +78,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
             tvOverview = itemView.findViewById(R.id.tvOverview);
             ivPoster = itemView.findViewById(R.id.ivPoster);
             container = itemView.findViewById(R.id.container);
+            ivPosterOverlay = itemView.findViewById(R.id.ivPosterOverlay);
         }
 
         public void bind(Movie movie) {
@@ -91,7 +95,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.ViewHolder>{
             } else {
                 Log.e(TAG, "Image Orientaion Error");
             }
-            Glide.with(context).load(imageUrl).placeholder(R.drawable.loading).into(ivPoster);
+            int radius = 37; // corner radius, higher value = more rounded
+            int margin = 0; // crop margin, set to 0 for corners with no crop
+            Glide.with(context).load(imageUrl).transform(new RoundedCornersTransformation(radius, margin)).placeholder(R.drawable.loading).into(ivPoster);
+            Double max = 5.0;
+            if(movie.getVoteAverage() > max) {
+                Glide.with(context).load(R.drawable.play_button).into(ivPosterOverlay);
+            }
 
             //1. Register click listener on the whole row
             //2.Navigate to a new activity
